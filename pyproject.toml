@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "noxaeapi-sdk"
+version = "0.4.0"
+description = "Typed Python SDK for the NoxAeApi REST + WebSocket API (Fabric, Bukkit/Spigot/Paper) and the NoxAeApi-Velocity network hub"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "WumX Labs" }]
+requires-python = ">=3.8"
+keywords = [
+    "minecraft",
+    "fabric",
+    "bukkit",
+    "spigot",
+    "paper",
+    "velocity",
+    "noxaeapi",
+    "noxlydev",
+    "wumx",
+    "rest-client",
+    "sdk",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Games/Entertainment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+ws = ["websocket-client>=1.6"]
+dev = ["pytest>=7.0", "mypy>=1.0"]
+
+[project.urls]
+Homepage = "https://github.com/WumXPro/noxaeapi-sdk"
+Documentation = "https://noxapi.noxlydev.xyz"
+Repository = "https://github.com/WumXPro/noxaeapi-sdk"
+Issues = "https://github.com/WumXPro/noxaeapi-sdk/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/noxaeapi_sdk"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "README.md", "LICENSE"]

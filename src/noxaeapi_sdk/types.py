@@ -45,6 +45,13 @@ class OfflinePlayer(TypedDict):
     lastPlayed: int
 
 
+class PlayerResolveResult(TypedDict):
+    """Result of resolving a player name to their UUID via ``GET /players/resolve/{name}``."""
+
+    name: str
+    uuid: str
+
+
 class ServerHealth(TypedDict):
     cpus: int
     uptime: int
@@ -219,6 +226,72 @@ class LeaderboardEntry(TypedDict):
     uuid: str
     name: str
     value: float
+
+
+class PlayerProfileBan(TypedDict, total=False):
+    """Ban details for a player, as reported by ``GET /v1/players/{uuid}/profile``'s ``status.ban``."""
+
+    banned: bool
+    reason: str
+    """Only present when ``banned`` is true."""
+    source: str
+    """Only present when ``banned`` is true."""
+    created: str
+    """Only present when ``banned`` is true. Serialized server-side as a locale-formatted date string, not ISO-8601."""
+    expires: Optional[str]
+    """Only present when ``banned`` is true. ``None``/absent means a permanent ban. Same date-string format as ``created``."""
+
+
+class PlayerProfileStatus(TypedDict):
+    """Whitelist + ban status for a player, as reported by ``GET /v1/players/{uuid}/profile``'s ``status`` field."""
+
+    whitelisted: bool
+    ban: PlayerProfileBan
+
+
+class PlayerProfileEconomy(TypedDict, total=False):
+    """Vault economy info for a player, as reported by ``GET /v1/players/{uuid}/profile``'s ``economy`` field.
+
+    Single-currency (Vault), not ExcellentEconomy's multi-currency system - see
+    :meth:`EconomyModule.get_currency_balance` for that.
+    """
+
+    available: bool
+    balance: float
+    """Only present when ``available`` is true."""
+
+
+class PlayerProfileStatTile(TypedDict, total=False):
+    """One leaderboard source's contribution to a player profile's ``stats`` array."""
+
+    id: str
+    label: str
+    status: Literal["ranked", "not_ranked", "unavailable"]
+    value: float
+    """Only present when ``status`` is "ranked"."""
+    rank: int
+    """Only present when ``status`` is "ranked" and the source reports a positive rank."""
+
+
+class PlayerProfile(TypedDict):
+    """One-call player profile combining identity, whitelist/ban status, Vault balance, and this
+    player's entry in every registered leaderboard source. Returned by
+    ``GET /v1/players/{uuid}/profile`` and (as the ``players`` array) by ``GET /v1/players/profiles``.
+    """
+
+    name: Optional[str]
+    uuid: str
+    online: bool
+    status: PlayerProfileStatus
+    economy: PlayerProfileEconomy
+    stats: List[PlayerProfileStatTile]
+
+
+class PlayerProfilesResponse(TypedDict):
+    """Response shape of ``GET /v1/players/profiles`` (bulk player profiles)."""
+
+    count: int
+    players: List[PlayerProfile]
 
 
 class NetworkServerStatus(TypedDict):

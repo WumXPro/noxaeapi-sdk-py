@@ -4,7 +4,14 @@ import urllib.parse
 from typing import Any, Dict, List, Optional, Union
 
 from ..http_engine import HttpEngine
-from ..types import Gamemode, InventoryItem, OfflinePlayer, OnlinePlayer, PlayerStats
+from ..types import (
+    Gamemode,
+    InventoryItem,
+    OfflinePlayer,
+    OnlinePlayer,
+    PlayerResolveResult,
+    PlayerStats,
+)
 
 
 def _q(value: str) -> str:
@@ -26,6 +33,17 @@ class PlayersModule:
     def get(self, uuid: str) -> Union[OnlinePlayer, OfflinePlayer]:
         """Get a single player by UUID (works for online or offline players)."""
         return self._http.request("GET", f"players/{_q(uuid)}")
+
+    def resolve(self, name: str) -> PlayerResolveResult:
+        """Resolve a player name to their UUID using the server's own local player cache.
+
+        Works on both online-mode and offline-mode servers, unlike Mojang's public
+        API - the UUID returned matches whatever this server actually uses for that
+        player's stats/economy/etc. Checks currently online players first, then
+        falls back to the server's offline player cache. Raises
+        ``NoxAeApiNotFoundError`` if no known player with that name has ever joined.
+        """
+        return self._http.request("GET", f"players/resolve/{_q(name)}")
 
     def get_inventory(self, player_uuid: str, world_uuid: str) -> List[InventoryItem]:
         """Get a player's inventory in a specific world."""
